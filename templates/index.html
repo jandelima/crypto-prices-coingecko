@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>CoinGecko Price Checker</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        table { border-collapse: collapse; margin-top: 20px; }
+        table, th, td { border: 1px solid #333; padding: 8px; }
+        th { background-color: #f2f2f2; }
+        form { margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+    <h1>CoinGecko Price Checker</h1>
+
+    <!-- Formulário para adicionar um novo ID de moeda -->
+    <form action="/add" method="post">
+        <label for="coin_id">ID da moeda:</label>
+        <input type="text" id="coin_id" name="coin_id" required>
+        <button type="submit">Adicionar ID</button>
+    </form>
+
+    <!-- Botão para atualizar os preços -->
+    <form action="/update" method="post">
+        <button type="submit">Atualizar preços</button>
+    </form>
+
+    <!-- Tabela exibindo os dados cadastrados -->
+    <h2>Moedas cadastradas</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>ID da moeda</th>
+                <th>Simbolo</th>
+                <th>Preço USD</th>
+                <th>Ação</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for coin in coins %}
+            <tr>
+                <td>{{ coin['id da moeda'] }}</td>
+                <td>{{ coin['simbolo'] }}</td>
+                <td>{{ coin['price'] }} </td>                  
+                <td>
+                    <form action="/delete/{{ coin['id da moeda'] }}" method="post">
+                        <button type="submit">Deletar</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>
