@@ -68,7 +68,11 @@ def update_data():
             for coin in coins:
                 for coin_data in data:
                     if coin_data.get("id") == coin["TokenID"]:
-                        coin["Price"] = coin_data.get("current_price", "N/A")
+                        current_price = coin_data.get("current_price")
+                        if current_price is not None:
+                            coin["Price"] = str(current_price).replace('.', ',')
+                        else:
+                            coin["Price"] = "N/A"
                         coin["Symbol"] = coin_data.get("symbol", "N/A").upper()
                         break
                 else:
@@ -78,6 +82,7 @@ def update_data():
         else:
             print("Erro na atualização dos dados:", response.status_code, response.text)
     return redirect(url_for('index'))
+
 
 
 @app.route('/delete/<coin_id>', methods=['POST'])
