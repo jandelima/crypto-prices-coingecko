@@ -14,38 +14,35 @@
 <body>
     <h1>CoinGecko Price Checker</h1>
 
-    <!-- Formulário para adicionar um novo ID de moeda -->
     <form action="/add" method="post">
-        <label for="coin_id">ID da moeda:</label>
+        <label for="coin_id">Token ID:</label>
         <input type="text" id="coin_id" name="coin_id" required>
-        <button type="submit">Adicionar ID</button>
+        <button type="submit">Add ID</button>
     </form>
 
-    <!-- Botão para atualizar os preços -->
     <form action="/update" method="post">
         <button type="submit">Atualizar preços</button>
     </form>
 
-    <!-- Tabela exibindo os dados cadastrados -->
     <h2>Moedas cadastradas</h2>
     <table>
         <thead>
             <tr>
-                <th>ID da moeda</th>
-                <th>Simbolo</th>
-                <th>Preço USD</th>
-                <th>Ação</th>
+                <th>Token ID</th>
+                <th>Symbol</th>
+                <th>Price</th>
+                <th>Action</th>
             </tr>
         </thead>
         <tbody>
             {% for coin in coins %}
             <tr>
-                <td>{{ coin['id da moeda'] }}</td>
-                <td>{{ coin['simbolo'] }}</td>
-                <td>{{ coin['price'] }} </td>                  
+                <td>{{ coin['Token ID'] }}</td>
+                <td>{{ coin['Symbol'] }}</td>
+                <td>{{ coin['Price'] }} </td>                  
                 <td>
-                    <form action="/delete/{{ coin['id da moeda'] }}" method="post">
-                        <button type="submit">Deletar</button>
+                    <form action="/delete/{{ coin['Token ID'] }}" method="post">
+                        <button type="submit">Delete</button>
                     </form>
                 </td>
             </tr>
