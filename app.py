@@ -58,7 +58,7 @@ def update_Prices():
     if coins:
         # Concatena os IDs das moedas para a requisição
         coin_ids_str = ','.join(coin['Token ID'] for coin in coins)
-        url = "https://api.coingecko.com/api/v3/simple/Price"
+        url = "https://api.coingecko.com/api/v3/simple/price"
         params = {
             "ids": coin_ids_str,
             "vs_currencies": "usd",
