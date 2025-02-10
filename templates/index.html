@@ -38,8 +38,8 @@
             {% for coin in coins %}
             <tr>
                 <td>{{ coin['TokenID'] }}</td>
-                <td id = "{{ coin['TokenID'] }}">{{ coin['Symbol'] }}</td>
-                <td id = "{{ coin['TokenID'] }}">{{ coin['Price'] }} </td>                  
+                <td symbol = "{{ coin['TokenID'] }}">{{ coin['Symbol'] }}</td>
+                <td id = "{{ coin['TokenID'] }}">{{ coin['Price'] }} </td>         
                 <td>
                     <form action="/delete/{{ coin['TokenID'] }}" method="post">
                         <button type="submit">Delete</button>
