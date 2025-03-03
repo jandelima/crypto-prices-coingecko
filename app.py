@@ -30,6 +30,47 @@ def save_coins(coins_list):
         for coin in coins_list:
             writer.writerow(coin)
 
+def atualizar_precos():
+    coins_list = load_coins()
+    
+    # Adiciona uma moeda temporária para evitar problemas com ids vazios
+    temp_coin_id = f"temp_{int(time.time())}"
+    temp_coin = {'TokenID': temp_coin_id, 'Symbol': 'TEMP', 'Price': 'N/A'}
+    coins_list.append(temp_coin)
+    save_coins(coins_list)
+    
+    coins_list = load_coins()
+    coin_ids_str = ','.join(coin['TokenID'] for coin in coins_list)
+    
+    url = "https://api.coingecko.com/api/v3/coins/markets"
+    params = {
+        "vs_currency": "usd",
+        "ids": coin_ids_str
+    }
+    response = requests.get(url, params=params)
+    if response.status_code == 200:
+        data = response.json()
+        for coin in coins_list:
+            found = False
+            for coin_data in data:
+                if coin_data.get("id") == coin["TokenID"]:
+                    current_price = coin_data.get("current_price")
+                    coin["Price"] = str(current_price).replace('.', ',') if current_price is not None else "N/A"
+                    coin["Symbol"] = coin_data.get("symbol", "N/A").upper()
+                    found = True
+                    break
+            if not found:
+                coin["Price"] = "N/A"
+                coin["Symbol"] = "N/A"
+        save_coins(coins_list)
+    else:
+        print("Erro na atualização dos dados:", response.status_code, response.text)
+    
+    # Remove a moeda temporária
+    coins_list = load_coins()
+    coins_list = [coin for coin in coins_list if not coin['TokenID'].startswith("temp_")]
+    save_coins(coins_list)
+
 @app.route('/')
 def index():
     return render_template('index.html', coins=load_coins())
@@ -55,50 +96,8 @@ def add_coin():
 
 @app.route('/update', methods=['POST'])
 def update_data():
-    coins_list = load_coins()
-    
-    temp_coin_id = f"temp_{int(time.time())}"
-    temp_coin = {'TokenID': temp_coin_id, 'Symbol': 'TEMP', 'Price': 'N/A'}
-    coins_list.append(temp_coin)
-    save_coins(coins_list)
-    
-    coins_list = load_coins()
-    coin_ids_str = ','.join(coin['TokenID'] for coin in coins_list)
-    
-    url = "https://api.coingecko.com/api/v3/coins/markets"
-    params = {
-        "vs_currency": "usd",
-        "ids": coin_ids_str
-    }
-    response = requests.get(url, params=params)
-    if response.status_code == 200:
-        data = response.json()
-        print("Dados da API:", data)
-        for coin in coins_list:
-            found = False
-            for coin_data in data:
-                if coin_data.get("id") == coin["TokenID"]:
-                    current_price = coin_data.get("current_price")
-                    if current_price is not None:
-                        coin["Price"] = str(current_price).replace('.', ',')
-                    else:
-                        coin["Price"] = "N/A"
-                    coin["Symbol"] = coin_data.get("symbol", "N/A").upper()
-                    found = True
-                    break
-            if not found:
-                coin["Price"] = "N/A"
-                coin["Symbol"] = "N/A"
-        save_coins(coins_list)
-    else:
-        print("Erro na atualização dos dados:", response.status_code, response.text)
-    
-    coins_list = load_coins()
-    coins_list = [coin for coin in coins_list if not coin['TokenID'].startswith("temp_")]
-    save_coins(coins_list)
-    
+    atualizar_precos()
     return redirect(url_for('index'))
-
 
 @app.route('/delete/<coin_id>', methods=['POST'])
 def delete_coin(coin_id):
@@ -114,7 +113,8 @@ def add_header(response):
     response.headers["Expires"] = "0"
     return response
 
-
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
+    with app.app_context():
+        atualizar_precos()  # Atualiza os preços automaticamente ao iniciar o app
     app.run(host="0.0.0.0", port=port, debug=True)
