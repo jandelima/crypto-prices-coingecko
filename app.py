@@ -75,7 +75,7 @@ def atualizar_precos():
 
 
 scheduler = BackgroundScheduler()
-scheduler.add_job(func=atualizar_precos, trigger="interval", seconds=40)
+scheduler.add_job(func=atualizar_precos, trigger="interval", hours=1)
 scheduler.start()
 atexit.register(lambda: scheduler.shutdown())
 
