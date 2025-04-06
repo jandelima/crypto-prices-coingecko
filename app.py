@@ -6,6 +6,15 @@ import time
 
 app = Flask(__name__)
 
+from apscheduler.schedulers.background import BackgroundScheduler
+import atexit
+
+scheduler = BackgroundScheduler()
+scheduler.add_job(func=atualizar_precos, trigger="interval", seconds=40)
+scheduler.start()
+
+atexit.register(lambda: scheduler.shutdown())
+
 COINS_FILE = 'coins.csv'
 
 def load_coins():
