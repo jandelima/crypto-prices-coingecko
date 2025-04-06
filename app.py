@@ -3,17 +3,10 @@ import requests
 import csv
 import os
 import time
-
-app = Flask(__name__)
-
 from apscheduler.schedulers.background import BackgroundScheduler
 import atexit
 
-scheduler = BackgroundScheduler()
-scheduler.add_job(func=atualizar_precos, trigger="interval", seconds=40)
-scheduler.start()
-
-atexit.register(lambda: scheduler.shutdown())
+app = Flask(__name__)
 
 COINS_FILE = 'coins.csv'
 
@@ -79,6 +72,12 @@ def atualizar_precos():
     coins_list = load_coins()
     coins_list = [coin for coin in coins_list if not coin['TokenID'].startswith("temp_")]
     save_coins(coins_list)
+
+
+scheduler = BackgroundScheduler()
+scheduler.add_job(func=atualizar_precos, trigger="interval", seconds=40)
+scheduler.start()
+atexit.register(lambda: scheduler.shutdown())
 
 @app.route('/')
 def index():
